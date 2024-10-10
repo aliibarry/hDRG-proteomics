@@ -45,7 +45,6 @@ sig_de <- results[results$adj.P.Val < 0.05, , drop = FALSE]
 sig_de <- sig_de[abs(sig_de$logFC) > 1, ]
 
 head(sig_de)
-tail(sig_de)
 
 write.csv(results, paste(PATH_results, "DEP-limma-tissue.csv"))
 write.csv(sig_de, paste(PATH_results,  "DEP-limma-tissue_significant.csv"))
