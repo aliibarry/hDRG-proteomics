@@ -88,5 +88,84 @@ pdf(paste0(PATH_results, "GPCR.pdf"), height = 3, width = 5)
 plot_gpcr
 dev.off()
 
+################################################################################
+
+# calculate proportion of proteins detected in each pain-related gene set
+
+library(msigdbr)
+
+mat     <- read.csv("./data/processed/matrix-for-limma.csv", header = TRUE, check.names = FALSE)
+mat     <- mat %>% distinct(genes, .keep_all = TRUE)
+
+pain_genes   = read.csv("../pain-classifier/data/pg.csv", row.names = 1)
+immune_genes = read.csv("../hdrg_proteomics/data/immunedisease_gs.csv")
+GO_gene_sets = msigdbr(species = "Homo sapiens", category = "C5", subcategory = "BP")
+
+################################################################################
+
+gene.ids <- data.frame(symbol = mat$genes)
+head(gene.ids)
+
+gs_of_interest <- c("HSNPS", "PL", "PGD",
+                    "sensory_pain", "response_to_pain")
+
+#gs_of_interest <- c("pain_drugs", "chronic_pain_drugs", "neuropathic_pain_drugs")
+
+pain_genes <- pain_genes[pain_genes$gs %in% gs_of_interest,]
+#pain_genes <- immune_genes
+
+bonus <- GO_gene_sets[GO_gene_sets$gs_name == "GOBP_INFLAMMATORY_RESPONSE", ]
+bonus <- bonus[, c("human_ensembl_gene", "gs_name", "gene_symbol")]
+bonus$gs <- "Inflammatory response"
+bonus$gene <- bonus$human_ensembl_gene
+bonus$symbol <- bonus$gene_symbol
+
+bonus <- as.data.frame(bonus)
+bonus <- bonus[, c("symbol", "gene", "gs")]
+
+# Stack the tables using rbind
+pain_genes <- rbind(pain_genes, bonus)
+
+################################################################################
+
+gene.ids$proteomics <- 1
+pain_genes$gene_set <- 1
+pain_genes$gene <- NULL
+
+head(gene.ids)
+#gene.ids <- gene.ids %>% dplyr::distinct()
+
+proportions <- merge(gene.ids, pain_genes, by = "symbol", all.y = TRUE)
+proportions[is.na(proportions)] <- 0
+head(proportions)
+
+proportions <- proportions %>%
+  dplyr::group_by(gs) %>%
+  dplyr::summarise(
+    prop = mean(as.integer(proteomics)),
+    count = sum(as.integer(proteomics == 1))
+  )
+
+head(proportions)
+
+g <- ggplot(proportions, aes(x = gs, y = prop, fill = log(count))) 
+g <- g + geom_bar(stat = "identity") + 
+  scale_fill_gradient(low = "#e8740036", high = "#003391d9",
+                      breaks = c(20, 100, 200),
+                      labels = c(20, 100, 200))
+g <- g + labs(y = "Proportion", size = 15)
+g <- g + theme_bw() + ggtitle("Pain Pathway Overlap") +
+  theme(axis.text.y = element_text(size= 12, colour= "black", hjust = 1), 
+        axis.text.x = element_text(size=12, angle = 45, hjust= 1), 
+        legend.text = element_text(size=12), 
+        axis.title.x = element_blank(),
+        plot.title=element_text(size=rel(1), hjust = 1)) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+print(g)
+
+pdf(paste0("boxplot_immune.pdf"), height = 4, width = 3)
+print(g)
+dev.off()
 
 
