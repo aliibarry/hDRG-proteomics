@@ -2,10 +2,13 @@ library(dplyr)
 library(tidyr)
 library(stringr)
 library(ggplot2)
+library(msigdbr)
 
 PATH_results = "./output/"
 mat     <- read.csv("./data/processed/matrix-for-limma.csv", header = TRUE, check.names = FALSE)
 colData <- read.csv("./data/processed/colData-for-limma.csv")
+
+################################################################################
 
 mat <- mat %>% distinct(genes, .keep_all = TRUE)
 
@@ -92,10 +95,8 @@ dev.off()
 
 # calculate proportion of proteins detected in each pain-related gene set
 
-library(msigdbr)
-
-mat     <- read.csv("./data/processed/matrix-for-limma.csv", header = TRUE, check.names = FALSE)
-mat     <- mat %>% distinct(genes, .keep_all = TRUE)
+mat <- read.csv("./data/processed/matrix-for-limma.csv", header = TRUE, check.names = FALSE)
+mat <- mat %>% distinct(genes, .keep_all = TRUE)
 
 pain_genes   = read.csv("../pain-classifier/data/pg.csv", row.names = 1)
 immune_genes = read.csv("../hdrg_proteomics/data/immunedisease_gs.csv")
@@ -109,10 +110,11 @@ head(gene.ids)
 gs_of_interest <- c("HSNPS", "PL", "PGD",
                     "sensory_pain", "response_to_pain")
 
-#gs_of_interest <- c("pain_drugs", "chronic_pain_drugs", "neuropathic_pain_drugs")
-
 pain_genes <- pain_genes[pain_genes$gs %in% gs_of_interest,]
-#pain_genes <- immune_genes
+
+# #other options
+# gs_of_interest <- c("pain_drugs", "chronic_pain_drugs", "neuropathic_pain_drugs")
+# pain_genes <- immune_genes
 
 bonus <- GO_gene_sets[GO_gene_sets$gs_name == "GOBP_INFLAMMATORY_RESPONSE", ]
 bonus <- bonus[, c("human_ensembl_gene", "gs_name", "gene_symbol")]
@@ -123,10 +125,8 @@ bonus$symbol <- bonus$gene_symbol
 bonus <- as.data.frame(bonus)
 bonus <- bonus[, c("symbol", "gene", "gs")]
 
-# Stack the tables using rbind
+#to add inflammatory_response
 pain_genes <- rbind(pain_genes, bonus)
-
-################################################################################
 
 gene.ids$proteomics <- 1
 pain_genes$gene_set <- 1
