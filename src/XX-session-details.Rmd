@@ -1,0 +1,41 @@
+---
+title: "Session Info"
+date: "2024-11-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, include=FALSE}
+library(dplyr)
+library(tidyr)
+library(reshape2)
+
+library(ggplot2)
+library(ggbiplot)
+library(ggrepel)
+library(ggraph)
+
+library(viridis)
+library(ComplexHeatmap)
+library(matrixStats)
+library(gridExtra)
+library(stringr)
+
+library(variancePartition)
+library(clusterProfiler)
+library(stringr)
+library(msigdbr)
+library(limma)
+library(MSFA)
+library(psych)
+library(multcomp)
+```
+
+
+```{r}
+sessionInfo()
+```
+
