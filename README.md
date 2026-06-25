@@ -1,6 +1,6 @@
 # hDRG-proteomics
 
-Barry AM et al. 2024. Multi-omic integration with human DRG proteomics highlights TNFα signalling as a relevant sexually dimorphic pathway. [bioRxiv](https://www.biorxiv.org/content/10.1101/2024.12.06.626968v1)
+Barry AM et al. 2025. Multi-omic integration with human DRG proteomics highlights TNFα signalling as a relevant sexually dimorphic pathway. [PAIN](https://journals.lww.com/pain/fulltext/2025/10000/multi_omic_integration_with_human_dorsal_root.21.aspx)
 
 Quantitative proteomics of the human dorsal root ganglia (hDRG) via DIA-PASEF
 
